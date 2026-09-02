@@ -55,11 +55,11 @@ Preparatory portfolio work for the **CRAG PhD position** (*Critical Infrastructu
 
 ## Key Results
 
-Elevation range : 580 – 2,941 m
-Mean slope : 24.2°
-Critical slopes (>35°) : 20.1% of area
-Max failure prob Pf : 0.795
-High-risk (Pf > 0.10) : 10.6% of area
+Elevation range : 510 – 2,934 m
+Mean slope : 26.0°
+Critical slopes (>35°) : 21.2% of area
+Max failure prob Pf : 0.844
+High-risk (Pf > 0.10) : 15.4% of area
 Vertical stress σv : 15 – 76 MPa
 Max shear stress τmax : up to 25.5 MPa
 
