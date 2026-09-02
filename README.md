@@ -1,6 +1,6 @@
 # 🏔️ Alpine Geohazard Analysis — Hochkönig / Salzburg Alps
 
-\[!\[Streamlit App](https://static.streamlit.io/badges/streamlit\_badge\_black\_white.svg)](https://alpine-geohazard-analysis.stream
+\[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://alpine-geohazard-analysis.streamlit.app)
 !\[Python](https://img.shields.io/badge/Python-3.12-blue)
 !\[License](https://img.shields.io/badge/License-MIT-green)
 
