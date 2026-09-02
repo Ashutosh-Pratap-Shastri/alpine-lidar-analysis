@@ -71,7 +71,12 @@ Max shear stress τmax : up to 25.5 MPa
 **Hochkönig / Salzburg Alps**
 Bounding box: 13.05–13.20°E, 47.38–47.50°N · Resolution: ~18–22 m/pixel
 
-> **Data note:** The bundled DEM is real satellite-measured terrain from the Copernicus GLO-30 dataset (European Space Agency, 2024), downloaded via OpenTopography for the Hochkönig bounding box (13.05–13.20°E, 47.38–47.50°N). Citation: European Space Agency (2024). Copernicus Global Digital Elevation Model. https://doi.org/10.5069/G9028PQB. for the Northern Calcareous Alps (elevation 580–2941 m; glacially carved valleys; limestone massif character). Any real SRTM-30m or Copernicus GLO-30 tile replaces it with zero code changes.
+> **Data note:** The bundled DEM is real satellite-measured terrain from the 
+Copernicus GLO-30 dataset (European Space Agency, 2024), 
+downloaded via OpenTopography for the Hochkönig bounding box 
+(13.05–13.20°E, 47.38–47.50°N). Citation: European Space Agency 
+(2024). Copernicus Global Digital Elevation Model. 
+https://doi.org/10.5069/G9028PQB.
 
 ---
 
