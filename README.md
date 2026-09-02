@@ -1,21 +1,43 @@
-# Alpine DEM Analysis — Hochkönig / Salzburg Alps
+# 🏔️ Alpine Geohazard Analysis — Hochkönig / Salzburg Alps
 
-Terrain analysis pipeline for slope stability and topographic stress
-assessment in high-alpine environments.
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ashutosh-pratap-shastri-alpine-lidar-analysis-app-placeholder.streamlit.app)
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+**DEM-based slope stability and topographic stress assessment for high-alpine environments.**  
+Preparatory portfolio work for the **CRAG PhD position** (*Critical Infrastructure Risk from Alpine Geohazards*) at the Paris Lodron University of Salzburg.
 
 ---
 
-## Context
+## 🌐 Live Web App
 
-Preparatory portfolio work for the **CRAG PhD position**
-(*Critical Infrastructure Risk from Alpine Geohazards*)
-at the Paris Lodron University of Salzburg — Department of Environment
-and Biodiversity, DSP DynamitE Vol. 2.
+> **Anyone can run this analysis in their browser — no installation needed.**  
+> Upload your own GeoTIFF DEM or use the built-in Salzburg Alps terrain.  
+> Adjust rock mass parameters, run Monte Carlo, download figures.
 
-The pipeline demonstrates familiarity with DEM-based terrain analysis
-as the foundational step in the multiscale monitoring workflow
-(TLS → UAV → InSAR → geomechanical model) that CRAG uses to predict
-gravitational mass movements threatening critical infrastructure.
+👉 **[Launch the app on Streamlit Cloud](#)** ← link updates after deployment
+
+---
+
+## 📊 Output Figures
+
+### Overview (4-panel composite)
+![Overview](outputs/00_overview_composite.png)
+
+### DEM + Hillshade
+![DEM](outputs/01_dem_hillshade.png)
+
+### Slope Map — Critical Zones >35°
+![Slope](outputs/02_slope_map.png)
+
+### Topographic Stress Field
+![Stress](outputs/03_stress_field.png)
+
+### Failure Probability (Monte Carlo)
+![Failure probability](outputs/04_failure_probability.png)
+
+### Summary Statistics
+![Stats](outputs/05_summary_statistics.png)
 
 ---
 
@@ -31,138 +53,107 @@ gravitational mass movements threatening critical infrastructure.
 
 ---
 
-## Study Area
+## Key Results (Salzburg Alps synthetic DEM)
 
-**Hochkönig / Salzburg Alps region**
-Bounding box: 13.05–13.20°E, 47.38–47.50°N
-Resolution: ~18–22 m per pixel
-
-> **Data note:** The DEM in `data/salzburg_dem.tif` is a high-fidelity
-> synthetic terrain generated from published geomorphological parameters
-> for the Northern Calcareous Alps (elevation 580–2941 m; glacially
-> carved valley geometry; 20.1% of area with slopes >35°; limestone
-> massif character consistent with Hochkönig).
-> Any real SRTM-30m or Copernicus GLO-30 tile for this bounding box
-> can replace it with zero code changes.
+```
+Elevation range        :  580 – 2,941 m
+Mean slope             :  24.2°
+Critical slopes (>35°) :  20.1% of area
+Max failure prob Pf    :  0.795
+High-risk (Pf > 0.10)  :  10.6% of area
+Vertical stress σv     :  15 – 76 MPa
+Max shear stress τmax  :  up to 25.5 MPa
+```
 
 ---
 
-## Key Results
+## Study Area
 
-```
-Elevation range   :  580 – 2,941 m
-Mean slope        :  24.2°
-Critical slopes (>35°) :  20.1% of area
-Max failure probability Pf :  0.795
-High-risk zones (Pf > 0.10) :  10.6% of area
-Vertical stress proxy σv :  15 – 76 MPa
-Max shear stress proxy τmax :  up to 25.5 MPa
-```
+**Hochkönig / Salzburg Alps**  
+Bounding box: 13.05–13.20°E, 47.38–47.50°N · Resolution: ~18–22 m/pixel
+
+> **Data note:** The bundled DEM is a high-fidelity synthetic terrain built from
+> published geomorphological parameters for the Northern Calcareous Alps
+> (elevation 580–2941 m; glacially carved valleys; limestone massif character).
+> Any real SRTM-30m or Copernicus GLO-30 tile for this bounding box replaces it
+> with zero code changes.
 
 ---
 
 ## Methodological Notes
 
 ### Terrain derivatives
-Slope, aspect and curvature are computed via the Horn (1981) 3×3
-finite-difference gradient estimator — the same kernel used by
-ArcGIS `Slope`, QGIS `Slope`, and `gdaldem slope`.
+Horn (1981) 3×3 finite-difference gradient estimator — same kernel as ArcGIS `Slope`, QGIS, `gdaldem`.
 
 ### Stress proxy
-The topographic dead-load stress proxy here is a simplified 2-D
-approximation:
-
 ```
-σv  = ρ g H / 10⁶          (lithostatic vertical stress, MPa)
-K0  = ν / (1 − ν)           (at-rest coefficient, elastic half-space)
-σh  = K0 σv (1 + sin α)     (horizontal with slope amplification)
-τmax = |σv − σh| / 2        (maximum shear stress)
+σv   = ρ g H / 10⁶          lithostatic vertical stress (MPa)
+K0   = ν / (1 − ν)           at-rest coefficient
+σh   = K0 σv (1 + sin α)     slope-amplified horizontal stress
+τmax = |σv − σh| / 2         maximum shear stress
 ```
-
-This is **not** an implementation of the Finite Cell Method (FCM)
-3-D stress computation developed by Haunsperger & Robl (2025, 2026),
-nor of the Savage (1985) analytical solution. The FCM operates on full
-volumetric meshes across entire massifs on HPC clusters and resolves
-complete 3-D stress tensors. This proxy demonstrates the conceptual
-pipeline only and produces the same first-order spatial pattern.
+> ⚠️ This is a simplified 2-D dead-load proxy — **not** the FCM 3-D volumetric
+> solution (Haunsperger & Robl 2025, 2026). The FCM operates on full volumetric
+> meshes across entire massifs on HPC clusters.
 
 ### Failure probability
-The infinite-slope Monte Carlo treats cohesion c and friction angle φ
-as normally distributed random variables:
-
 ```
-c  ~ N(50, 15) kPa
-φ  ~ N(35,  5) °
-FS = (c + σn tan φ) / τ
-Pf = P(FS < 1.0),  n = 10,000 realisations
+c   ~ N(50, 15) kPa     cohesion (uncertain)
+φ   ~ N(35,  5) °       friction angle (uncertain)
+FS  = (c + σn tan φ) / τ
+Pf  = P(FS < 1.0),  n = 10,000 Monte Carlo realisations
 ```
-
-This extends the probabilistic FEM methodology from the author's
-M.Tech thesis (Rosenblueth PEM + Monte Carlo in RS2) to
-DEM-scale alpine terrain.
+Extends the probabilistic FEM methodology from the author's M.Tech thesis
+(Rosenblueth PEM + Monte Carlo in RS2) to DEM-scale alpine terrain.
 
 ---
 
 ## Connection to CRAG
 
-The FCM-based 3-D stress modelling in CRAG
-(primary supervisor: Assoc.-Prof. Jörg Robl, Univ. Salzburg;
-co-supervisor: Prof. Barbara Schneider-Muntau, Univ. Innsbruck)
-operates on the same conceptual chain — topography → stress field →
-failure threshold — but resolved at full massif scale with volumetric
-finite cell meshes on HPC clusters, coupled with real multiscale
-monitoring data (InSAR, UAV, TLS, fissurometers) from Jan-Christoph
-Otto's alpine field sites.
+The FCM-based 3-D stress modelling in CRAG operates on the same conceptual chain —
+**topography → stress field → failure threshold** — but resolved at full massif
+scale with volumetric finite cell meshes on HPC clusters, coupled with real
+multiscale monitoring data (InSAR, UAV, TLS, fissurometers).
 
-The identified gap this pipeline illustrates:
-> *"None of the six foundational papers in CRAG's literature base
-> computes a probabilistic failure output — Haunsperger & Robl produce
-> deterministic stress tensors; Schneider-Muntau produces deterministic
-> factors of safety. Propagating geological uncertainty through the
-> stress and stability model to obtain Pf is the step this pipeline
-> demonstrates."*
-
----
-
-## Outputs
-
-| File | Description |
-|------|-------------|
-| `00_overview_composite.png` | 4-panel summary: DEM · Slope · Stress · Pf |
-| `01_dem_hillshade.png` | DEM overlaid on hillshade |
-| `02_slope_map.png` | Slope angle + critical zones >35° |
-| `03_stress_field.png` | σv and τmax proxy maps |
-| `04_failure_probability.png` | Pf map + stress–stability scatter |
-| `05_summary_statistics.png` | Statistical distributions of all products |
-
----
-
-## Libraries
-
-```
-numpy       — numerical operations
-scipy       — gradient computation, filtering (replaces richdem)
-rasterio    — raster GeoTIFF I/O
-matplotlib  — publication-quality figures
-```
+> *None of the six foundational CRAG papers computes a probabilistic Pf output.
+> Haunsperger & Robl produce deterministic stress tensors; Schneider-Muntau
+> produces deterministic factors of safety. Propagating geological uncertainty
+> through the model to obtain Pf is the step this pipeline demonstrates.*
 
 ---
 
 ## Usage
 
+### Run locally
 ```bash
-# From project root
-python3 src/terrain_analysis.py
+git clone https://github.com/Ashutosh-Pratap-Shastri/alpine-lidar-analysis
+cd alpine-lidar-analysis
+pip install -r requirements.txt
+python3 src/terrain_analysis.py      # batch pipeline → outputs/
+streamlit run app.py                 # interactive web app
 ```
 
-Outputs appear in `outputs/`. To use a real DEM, replace
-`data/salzburg_dem.tif` with any GeoTIFF at any resolution.
+### Use your own DEM
+Replace `data/salzburg_dem.tif` with any GeoTIFF — or upload it directly
+in the web app.
+
+---
+
+## Libraries
+
+| Library | Purpose |
+|---------|---------|
+| `numpy` | Numerical operations |
+| `scipy` | Gradient computation, filtering |
+| `rasterio` | GeoTIFF I/O |
+| `matplotlib` | Publication-quality figures |
+| `streamlit` | Interactive web app |
 
 ---
 
 ## Author
 
-**Ashutosh Pratap Shastri**
-Junior Research Fellow, Department of Mining Engineering, IIT (BHU) Varanasi
-M.Tech Geotechnical Engineering, IIT Patna (2025)
-GitHub: [github.com/Ashutosh-Pratap-Shastri](https://github.com/Ashutosh-Pratap-Shastri)
+**Ashutosh Pratap Shastri**  
+Junior Research Fellow, Department of Mining Engineering, IIT (BHU) Varanasi  
+M.Tech Geotechnical Engineering, IIT Patna (2025)  
+[github.com/Ashutosh-Pratap-Shastri](https://github.com/Ashutosh-Pratap-Shastri)
